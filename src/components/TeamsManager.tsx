@@ -18,6 +18,18 @@ export default function TeamsManager() {
 
   useEffect(() => {
     fetchTeams();
+
+    // Subscribe to real-time changes
+    const teamsSubscription = supabase
+      .channel('manager:teams')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, () => {
+        fetchTeams();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(teamsSubscription);
+    };
   }, []);
 
   const fetchTeams = async () => {

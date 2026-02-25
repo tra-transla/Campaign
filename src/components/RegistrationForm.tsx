@@ -26,6 +26,26 @@ export default function RegistrationForm() {
   useEffect(() => {
     fetchRegistrations();
     fetchTeams();
+
+    // Subscribe to real-time changes
+    const registrationsSubscription = supabase
+      .channel('public:registrations')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'registrations' }, () => {
+        fetchRegistrations();
+      })
+      .subscribe();
+
+    const teamsSubscription = supabase
+      .channel('public:teams')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, () => {
+        fetchTeams();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(registrationsSubscription);
+      supabase.removeChannel(teamsSubscription);
+    };
   }, []);
 
   const fetchTeams = async () => {
@@ -203,6 +223,10 @@ export default function RegistrationForm() {
                     </>
                   )}
                 </button>
+                
+                <div className="text-center text-sm font-medium text-zinc-900 opacity-50 pt-2">
+                  © 2026 • Ice Tea
+                </div>
               </form>
             </motion.div>
             

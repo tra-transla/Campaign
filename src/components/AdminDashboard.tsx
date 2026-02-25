@@ -30,6 +30,26 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchRegistrations();
     fetchTeams();
+
+    // Subscribe to real-time changes
+    const registrationsSubscription = supabase
+      .channel('admin:registrations')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'registrations' }, () => {
+        fetchRegistrations();
+      })
+      .subscribe();
+
+    const teamsSubscription = supabase
+      .channel('admin:teams')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, () => {
+        fetchTeams();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(registrationsSubscription);
+      supabase.removeChannel(teamsSubscription);
+    };
   }, []);
 
   const fetchRegistrations = async () => {
