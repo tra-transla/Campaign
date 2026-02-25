@@ -37,6 +37,7 @@ export default function AdminDashboard() {
       const { data, error } = await supabase
         .from('registrations')
         .select('*')
+        .order('team', { ascending: true })
         .order('created_at', { ascending: false });
         
       if (error) throw error;
@@ -126,11 +127,17 @@ export default function AdminDashboard() {
     }
   };
 
-  const filteredRegistrations = registrations.filter(reg => 
-    (reg.team || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (reg.in_game_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (reg.tanks || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRegistrations = registrations
+    .filter(reg => 
+      (reg.team || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (reg.in_game_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (reg.tanks || '').toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      const teamA = a.team || '';
+      const teamB = b.team || '';
+      return teamA.localeCompare(teamB);
+    });
 
   return (
     <div className="min-h-screen bg-zinc-50">

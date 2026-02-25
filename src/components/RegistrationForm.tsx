@@ -240,7 +240,9 @@ export default function RegistrationForm() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {Object.entries(groupedRegistrations).map(([teamName, members]: [string, Registration[]]) => (
+                  {Object.entries(groupedRegistrations)
+                    .sort(([teamA], [teamB]) => teamA.localeCompare(teamB))
+                    .map(([teamName, members]: [string, Registration[]]) => (
                     <div key={teamName} className="bg-zinc-50 rounded-xl border border-zinc-200 overflow-hidden">
                       <div className="bg-zinc-900 px-4 py-3 flex justify-between items-center">
                         <h3 className="font-semibold text-white">{teamName}</h3>
