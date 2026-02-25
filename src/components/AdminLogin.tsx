@@ -110,7 +110,8 @@ export default function AdminLogin() {
         </form>
       </motion.div>
       
-      <div className="mt-8 text-sm text-zinc-600">
+      <div className="mt-8 text-sm text-zinc-600 flex flex-col items-center gap-2">
+        <a href="/admin/setup" className="hover:text-zinc-400 transition-colors">Chưa có tài khoản? Tạo mới</a>
         <a href="/" className="hover:text-zinc-400 transition-colors">← Quay lại trang đăng ký</a>
       </div>
     </div>
