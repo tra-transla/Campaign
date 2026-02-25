@@ -17,17 +17,32 @@ export default function RegistrationForm() {
     inGameName: '',
     tanks: ''
   });
-  const [customTeam, setCustomTeam] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [teams, setTeams] = useState<string[]>(['Cá Kiếm', 'Minato', 'Team đấu giá', 'Team vá lốp']);
   const [loadingRegistrations, setLoadingRegistrations] = useState(true);
-
-  const teams = ['Cá Kiếm', 'Minato', 'Team 3 (Tự điền)', 'Team 4 (Tự điền)'];
 
   useEffect(() => {
     fetchRegistrations();
+    fetchTeams();
   }, []);
+
+  const fetchTeams = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('name')
+        .order('created_at', { ascending: true });
+        
+      if (error) throw error;
+      if (data && data.length > 0) {
+        setTeams(data.map(t => t.name));
+      }
+    } catch (error) {
+      console.error('Failed to fetch teams', error);
+    }
+  };
 
   const fetchRegistrations = async () => {
     try {
@@ -50,9 +65,7 @@ export default function RegistrationForm() {
     setStatus('submitting');
     setErrorMessage('');
 
-    const finalTeam = formData.team.includes('Tự điền') ? customTeam : formData.team;
-
-    if (!finalTeam || !formData.inGameName || !formData.tanks) {
+    if (!formData.team || !formData.inGameName || !formData.tanks) {
       setStatus('error');
       setErrorMessage('Vui lòng điền đầy đủ thông tin.');
       return;
@@ -62,7 +75,7 @@ export default function RegistrationForm() {
       const { error } = await supabase
         .from('registrations')
         .insert([{ 
-          team: finalTeam, 
+          team: formData.team, 
           in_game_name: formData.inGameName, 
           tanks: formData.tanks 
         }]);
@@ -71,7 +84,6 @@ export default function RegistrationForm() {
       
       setStatus('success');
       setFormData({ team: '', inGameName: '', tanks: '' });
-      setCustomTeam('');
       fetchRegistrations(); // Refresh list after successful registration
     } catch (error: any) {
       setStatus('error');
@@ -145,25 +157,6 @@ export default function RegistrationForm() {
                     ))}
                   </select>
                 </div>
-
-                {formData.team.includes('Tự điền') && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                  >
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">
-                      Tên Team (Tự điền)
-                    </label>
-                    <input
-                      type="text"
-                      value={customTeam}
-                      onChange={(e) => setCustomTeam(e.target.value)}
-                      placeholder="Nhập tên team của bạn"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-zinc-900 focus:border-zinc-900 outline-none transition-all"
-                      required
-                    />
-                  </motion.div>
-                )}
 
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 mb-2">
