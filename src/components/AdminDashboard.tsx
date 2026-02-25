@@ -314,17 +314,19 @@ export default function AdminDashboard() {
                                 <div className="flex items-center justify-end gap-2">
                                   <button 
                                     onClick={() => handleSaveEdit(reg.id)}
-                                    className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg transition-colors font-medium"
                                     title="Lưu"
                                   >
-                                    <Save size={18} />
+                                    <Save size={16} />
+                                    <span>Lưu</span>
                                   </button>
                                   <button 
                                     onClick={handleCancelEdit}
-                                    className="p-2 text-zinc-500 hover:bg-zinc-100 rounded-lg transition-colors"
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-zinc-100 text-zinc-700 hover:bg-zinc-200 rounded-lg transition-colors font-medium"
                                     title="Hủy"
                                   >
-                                    <X size={18} />
+                                    <X size={16} />
+                                    <span>Hủy</span>
                                   </button>
                                 </div>
                               </td>
@@ -338,21 +340,23 @@ export default function AdminDashboard() {
                                 {new Date(reg.created_at).toLocaleDateString('vi-VN')}
                               </td>
                               <td className="px-6 py-4 text-right">
-                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex items-center justify-end gap-2">
                                   <button 
                                     onClick={() => handleEditClick(reg)}
-                                    className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors font-medium"
                                     title="Chỉnh sửa"
                                   >
-                                    <Edit2 size={18} />
+                                    <Edit2 size={16} />
+                                    <span>Sửa</span>
                                   </button>
                                   {user?.role === 'Quản trị' && (
                                     <button 
                                       onClick={() => handleDelete(reg.id)}
-                                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                      className="flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors font-medium"
                                       title="Xóa"
                                     >
-                                      <Trash2 size={18} />
+                                      <Trash2 size={16} />
+                                      <span>Xóa</span>
                                     </button>
                                   )}
                                 </div>

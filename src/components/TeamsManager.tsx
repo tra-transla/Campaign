@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Trash2, Plus, Users } from 'lucide-react';
+import { Trash2, Plus, Users, Edit2, Save, X } from 'lucide-react';
 
 interface Team {
   id: string;
@@ -12,6 +12,9 @@ export default function TeamsManager() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [newTeamName, setNewTeamName] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
+  const [editTeamName, setEditTeamName] = useState('');
 
   useEffect(() => {
     fetchTeams();
@@ -52,6 +55,35 @@ export default function TeamsManager() {
     } catch (error: any) {
       console.error('Failed to add team', error);
       alert('Lỗi khi thêm team: ' + error.message);
+    }
+  };
+
+  const handleEditClick = (team: Team) => {
+    setEditingTeamId(team.id);
+    setEditTeamName(team.name);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTeamId(null);
+    setEditTeamName('');
+  };
+
+  const handleSaveEdit = async (id: string) => {
+    if (!editTeamName.trim()) return;
+
+    try {
+      const { error } = await supabase
+        .from('teams')
+        .update({ name: editTeamName.trim() })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setTeams(teams.map(t => t.id === id ? { ...t, name: editTeamName.trim() } : t));
+      setEditingTeamId(null);
+    } catch (error: any) {
+      console.error('Failed to update team', error);
+      alert('Lỗi khi cập nhật team: ' + error.message);
     }
   };
 
@@ -121,16 +153,63 @@ export default function TeamsManager() {
               ) : (
                 teams.map((team) => (
                   <tr key={team.id} className="hover:bg-zinc-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-zinc-900">{team.name}</td>
-                    <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={() => handleDeleteTeam(team.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Xóa team"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
+                    {editingTeamId === team.id ? (
+                      <>
+                        <td className="px-6 py-4">
+                          <input
+                            type="text"
+                            value={editTeamName}
+                            onChange={(e) => setEditTeamName(e.target.value)}
+                            className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                            autoFocus
+                          />
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button 
+                              onClick={() => handleSaveEdit(team.id)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg transition-colors font-medium"
+                              title="Lưu"
+                            >
+                              <Save size={16} />
+                              <span>Lưu</span>
+                            </button>
+                            <button 
+                              onClick={handleCancelEdit}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-zinc-100 text-zinc-700 hover:bg-zinc-200 rounded-lg transition-colors font-medium"
+                              title="Hủy"
+                            >
+                              <X size={16} />
+                              <span>Hủy</span>
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="px-6 py-4 font-medium text-zinc-900">{team.name}</td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button 
+                              onClick={() => handleEditClick(team)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors font-medium"
+                              title="Chỉnh sửa"
+                            >
+                              <Edit2 size={16} />
+                              <span>Sửa</span>
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteTeam(team.id)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors font-medium"
+                              title="Xóa team"
+                            >
+                              <Trash2 size={16} />
+                              <span>Xóa</span>
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))
               )}

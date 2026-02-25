@@ -156,13 +156,16 @@ export default function UsersManager() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={() => handleDeleteUser(u.id, u.username)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Xóa người dùng"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button 
+                          onClick={() => handleDeleteUser(u.id, u.username)}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors font-medium"
+                          title="Xóa người dùng"
+                        >
+                          <Trash2 size={16} />
+                          <span>Xóa</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
