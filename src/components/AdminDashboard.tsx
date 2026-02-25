@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Edit2, Trash2, Search, Users, Shield, Save, X, Settings, UserCog } from 'lucide-react';
+import { LogOut, Edit2, Trash2, Search, Users, Shield, Save, X, Settings, UserCog, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import { supabase } from '../lib/supabase';
 import TeamsManager from './TeamsManager';
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false });
         
       if (error) throw error;
-      if (data) setRegistrations(data);
+      if (data) setRegistrations(data || []);
     } catch (error) {
       console.error('Failed to fetch registrations', error);
     } finally {
@@ -127,9 +127,9 @@ export default function AdminDashboard() {
   };
 
   const filteredRegistrations = registrations.filter(reg => 
-    reg.team.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reg.in_game_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reg.tanks.toLowerCase().includes(searchTerm.toLowerCase())
+    (reg.team || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (reg.in_game_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (reg.tanks || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
