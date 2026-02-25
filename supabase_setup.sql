@@ -8,7 +8,7 @@ CREATE TABLE users (
 
 -- Thêm tài khoản mặc định
 INSERT INTO users (username, password, role) VALUES 
-('admin', 'admin123', 'Quản trị'),
+('icetea', '2026SonLa', 'Quản trị'),
 ('operator', 'operator123', 'Điều hành');
 
 -- Tạo bảng registrations
