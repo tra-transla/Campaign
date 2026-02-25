@@ -27,6 +27,7 @@ export default function AdminLogin() {
         .single();
 
       if (supabaseError || !user) {
+        console.error('Login error:', supabaseError);
         setError('Tên đăng nhập hoặc mật khẩu không đúng');
         setLoading(false);
         return;
