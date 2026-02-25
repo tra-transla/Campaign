@@ -22,9 +22,5 @@ CREATE TABLE IF NOT EXISTS registrations (
 );
 
 -- Thiết lập Row Level Security (RLS) để cho phép API truy cập
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
-
--- Tạo policy cho phép tất cả các thao tác từ service role (anon key)
-CREATE POLICY "Allow all operations for anon" ON users FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all operations for anon" ON registrations FOR ALL USING (true) WITH CHECK (true);
+ALTER TABLE users DISABLE ROW LEVEL SECURITY;
+ALTER TABLE registrations DISABLE ROW LEVEL SECURITY;
