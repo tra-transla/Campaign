@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Send, CheckCircle2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function RegistrationForm() {
   const [formData, setFormData] = useState({
@@ -28,37 +29,22 @@ export default function RegistrationForm() {
     }
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const { error } = await supabase
+        .from('registrations')
+        .insert([{ 
+          team: finalTeam, 
+          in_game_name: formData.inGameName, 
+          tanks: formData.tanks 
+        }]);
 
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          team: finalTeam,
-          inGameName: formData.inGameName,
-          tanks: formData.tanks
-        }),
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Đăng ký thất bại');
-      }
+      if (error) throw error;
       
       setStatus('success');
       setFormData({ team: '', inGameName: '', tanks: '' });
       setCustomTeam('');
     } catch (error: any) {
       setStatus('error');
-      if (error.name === 'AbortError') {
-        setErrorMessage('Kết nối quá hạn. Vui lòng thử lại sau.');
-      } else {
-        setErrorMessage(error.message || 'Có lỗi xảy ra, vui lòng thử lại sau.');
-      }
+      setErrorMessage(error.message || 'Có lỗi xảy ra, vui lòng thử lại sau.');
     }
   };
 

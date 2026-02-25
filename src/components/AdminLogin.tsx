@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, Lock, User } from 'lucide-react';
 import { motion } from 'motion/react';
+import { supabase } from '../lib/supabase';
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('');
@@ -18,45 +19,27 @@ export default function AdminLogin() {
     setError('');
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const { data: user, error: supabaseError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('username', username)
+        .eq('password', password)
+        .single();
 
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-
-      if (res.ok) {
-        const data = await res.json().catch(() => ({}));
-        const meRes = await fetch('/api/me');
-        if (meRes.ok) {
-          const meData = await meRes.json().catch(() => ({}));
-          if (meData.user) {
-            login(meData.user);
-            navigate('/admin/dashboard');
-          } else {
-            setError('Không thể lấy thông tin người dùng');
-            setLoading(false);
-          }
-        } else {
-          setError('Không thể lấy thông tin người dùng');
-          setLoading(false);
-        }
-      } else {
-        const data = await res.json().catch(() => ({ error: 'Lỗi máy chủ không xác định' }));
-        setError(data.error || 'Đăng nhập thất bại');
+      if (supabaseError || !user) {
+        setError('Tên đăng nhập hoặc mật khẩu không đúng');
         setLoading(false);
+        return;
       }
+
+      login({
+        id: user.id,
+        username: user.username,
+        role: user.role
+      });
+      navigate('/admin/dashboard');
     } catch (err: any) {
-      if (err.name === 'AbortError') {
-        setError('Kết nối quá hạn. Vui lòng kiểm tra lại cấu hình Supabase trong Secrets.');
-      } else {
-        setError('Lỗi kết nối máy chủ: ' + (err.message || 'Unknown error'));
-      }
+      setError('Lỗi kết nối máy chủ: ' + (err.message || 'Unknown error'));
       setLoading(false);
     }
   };

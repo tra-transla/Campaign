@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Edit2, Trash2, Search, Users, Shield, Save, X } from 'lucide-react';
 import { motion } from 'motion/react';
+import { supabase } from '../lib/supabase';
 
 interface Registration {
   id: string | number;
@@ -28,16 +29,13 @@ export default function AdminDashboard() {
 
   const fetchRegistrations = async () => {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-      
-      const res = await fetch('/api/registrations', { signal: controller.signal });
-      clearTimeout(timeoutId);
-      
-      if (res.ok) {
-        const data = await res.json();
-        setRegistrations(data);
-      }
+      const { data, error } = await supabase
+        .from('registrations')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      if (data) setRegistrations(data);
     } catch (error) {
       console.error('Failed to fetch registrations', error);
     } finally {
@@ -65,45 +63,47 @@ export default function AdminDashboard() {
 
   const handleSaveEdit = async (id: string | number) => {
     try {
-      const res = await fetch(`/api/registrations/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          team: editForm.team,
-          inGameName: editForm.inGameName,
-          tanks: editForm.tanks
+      const { error } = await supabase
+        .from('registrations')
+        .update({ 
+          team: editForm.team, 
+          in_game_name: editForm.inGameName, 
+          tanks: editForm.tanks 
         })
-      });
+        .eq('id', id);
 
-      if (res.ok) {
-        setRegistrations(registrations.map(reg => 
-          reg.id === id ? { ...reg, team: editForm.team, in_game_name: editForm.inGameName, tanks: editForm.tanks } : reg
-        ));
-        setEditingId(null);
-      } else {
-        alert('Lỗi khi cập nhật');
-      }
+      if (error) throw error;
+
+      setRegistrations(registrations.map(reg => 
+        reg.id === id ? { ...reg, team: editForm.team, in_game_name: editForm.inGameName, tanks: editForm.tanks } : reg
+      ));
+      setEditingId(null);
     } catch (error) {
       console.error('Failed to update', error);
+      alert('Lỗi khi cập nhật');
     }
   };
 
   const handleDelete = async (id: string | number) => {
     if (!window.confirm('Bạn có chắc chắn muốn xóa đăng ký này?')) return;
 
-    try {
-      const res = await fetch(`/api/registrations/${id}`, {
-        method: 'DELETE'
-      });
+    if (user?.role !== 'Quản trị') {
+      alert('Chỉ Admin mới có quyền xóa');
+      return;
+    }
 
-      if (res.ok) {
-        setRegistrations(registrations.filter(reg => reg.id !== id));
-      } else {
-        const data = await res.json();
-        alert(data.error || 'Lỗi khi xóa');
-      }
+    try {
+      const { error } = await supabase
+        .from('registrations')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setRegistrations(registrations.filter(reg => reg.id !== id));
     } catch (error) {
       console.error('Failed to delete', error);
+      alert('Lỗi khi xóa');
     }
   };
 

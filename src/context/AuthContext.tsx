@@ -20,19 +20,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/me')
-      .then(res => {
-        if (res.ok) return res.json();
-        throw new Error('Not authenticated');
-      })
-      .then(data => setUser(data.user))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+    const storedUser = localStorage.getItem('campaign_user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        localStorage.removeItem('campaign_user');
+      }
+    }
+    setLoading(false);
   }, []);
 
-  const login = (userData: User) => setUser(userData);
+  const login = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem('campaign_user', JSON.stringify(userData));
+  };
+  
   const logout = () => {
-    fetch('/api/logout', { method: 'POST' }).then(() => setUser(null));
+    setUser(null);
+    localStorage.removeItem('campaign_user');
   };
 
   return (
