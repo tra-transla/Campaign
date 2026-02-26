@@ -148,9 +148,19 @@ export default function RegistrationForm() {
   return (
     <div className="min-h-screen bg-zinc-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8 text-center md:text-left">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-900 mb-2">Campaign 2026</h1>
-          <p className="text-zinc-500">Đăng ký thông tin tham gia giải đấu</p>
+        <div className="mb-8 flex items-center gap-4">
+          <img 
+            src="https://raw.githubusercontent.com/tra-transla/Campaign/main/src/AFO.png" 
+            alt="Campaign Logo" 
+            className="w-[75px] h-[75px] object-contain"
+            onError={(e) => {
+              e.currentTarget.src = "https://picsum.photos/75/75?text=Tank";
+            }}
+          />
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-zinc-900">Campaign 2026</h1>
+            <p className="text-zinc-500">Đăng ký thông tin tham gia giải đấu</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
