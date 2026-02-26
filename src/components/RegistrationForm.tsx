@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Send, CheckCircle2, Users } from 'lucide-react';
+import { Send, CheckCircle2, Users, Swords } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Registration {
@@ -150,12 +150,9 @@ export default function RegistrationForm() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex items-center gap-4">
           <img 
-            src="https://raw.githubusercontent.com/tra-transla/Campaign/main/src/AFO.png" 
+            src="https://i.ibb.co/nsCSz9mT/AFO.png" 
             alt="Campaign Logo" 
             className="w-[75px] h-[75px] object-contain"
-            onError={(e) => {
-              e.currentTarget.src = "https://picsum.photos/75/75?text=Tank";
-            }}
           />
           <div>
             <h1 className="text-4xl font-bold tracking-tight text-zinc-900">Campaign 2026</h1>
@@ -279,7 +276,10 @@ export default function RegistrationForm() {
                     .map(([teamName, members]: [string, Registration[]]) => (
                     <div key={teamName} className="bg-zinc-50 rounded-xl border border-zinc-200 overflow-hidden">
                       <div className="bg-zinc-900 px-4 py-3 flex justify-between items-center">
-                        <h3 className="font-semibold text-white">{teamName}</h3>
+                        <div className="flex items-center gap-2">
+                          <Swords size={18} className="text-zinc-400" />
+                          <h3 className="font-semibold text-white">{teamName}</h3>
+                        </div>
                         <span className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded-md font-medium">
                           {members.length} thành viên
                         </span>

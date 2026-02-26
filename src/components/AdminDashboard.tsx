@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Edit2, Trash2, Search, Users, Shield, Save, X, Settings, UserCog, User } from 'lucide-react';
+import { LogOut, Edit2, Trash2, Search, Users, Shield, Save, X, Settings, UserCog, User, Swords } from 'lucide-react';
 import { motion } from 'motion/react';
 import { supabase } from '../lib/supabase';
 import TeamsManager from './TeamsManager';
@@ -360,7 +360,12 @@ export default function AdminDashboard() {
                             </>
                           ) : (
                             <>
-                              <td className="px-6 py-4 font-medium text-zinc-900">{reg.team}</td>
+                              <td className="px-6 py-4 font-medium text-zinc-900">
+                                <div className="flex items-center gap-2">
+                                  <Swords size={14} className="text-zinc-400" />
+                                  {reg.team}
+                                </div>
+                              </td>
                               <td className="px-6 py-4">{reg.in_game_name}</td>
                               <td className="px-6 py-4">{reg.tanks}</td>
                               <td className="px-6 py-4 text-zinc-500">

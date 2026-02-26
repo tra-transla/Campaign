@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Trash2, Plus, Users, Edit2, Save, X } from 'lucide-react';
+import { Trash2, Plus, Users, Edit2, Save, X, Swords } from 'lucide-react';
 
 interface Team {
   id: string;
@@ -199,7 +199,12 @@ export default function TeamsManager() {
                       </>
                     ) : (
                       <>
-                        <td className="px-6 py-4 font-medium text-zinc-900">{team.name}</td>
+                        <td className="px-6 py-4 font-medium text-zinc-900">
+                          <div className="flex items-center gap-2">
+                            <Swords size={16} className="text-zinc-400" />
+                            {team.name}
+                          </div>
+                        </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <button 
