@@ -156,7 +156,7 @@ export default function RegistrationForm() {
           />
           <div>
             <h1 className="text-4xl font-bold tracking-tight text-zinc-900">Campaign 2026</h1>
-            <p className="text-zinc-500">Đăng ký thông tin tham gia giải đấu</p>
+            <p className="text-zinc-500">Spring Maneuvers: 23/03/2026 đến 06/04/2026</p>
           </div>
         </div>
 
