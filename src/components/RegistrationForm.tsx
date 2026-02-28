@@ -85,7 +85,7 @@ export default function RegistrationForm() {
     setStatus('submitting');
     setErrorMessage('');
 
-    if (!formData.team || !formData.inGameName || !formData.tanks) {
+    if (!formData.team.trim() || !formData.inGameName.trim() || !formData.tanks.trim()) {
       setStatus('error');
       setErrorMessage('Vui lòng điền đầy đủ thông tin.');
       return;
@@ -171,7 +171,7 @@ export default function RegistrationForm() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 mb-2">
-                    Chọn Team
+                    Chọn Team <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={formData.team}
@@ -188,7 +188,7 @@ export default function RegistrationForm() {
 
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 mb-2">
-                    Tên trong game (In-game Name)
+                    Tên trong game (In-game Name) <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -202,7 +202,7 @@ export default function RegistrationForm() {
 
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 mb-2">
-                    Tanks (Các xe tăng sử dụng)
+                    Tanks (Các xe tăng sử dụng) <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={formData.tanks}

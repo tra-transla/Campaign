@@ -102,6 +102,11 @@ export default function AdminDashboard() {
   };
 
   const handleSaveEdit = async (id: string | number) => {
+    if (!editForm.team.trim() || !editForm.inGameName.trim() || !editForm.tanks.trim()) {
+      alert('Vui lòng điền đầy đủ thông tin');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('registrations')
