@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Trash2, Plus, Users, Edit2, Save, X, Swords } from 'lucide-react';
+import { Trash2, Plus, Users, Edit2, Save, X, Swords, Lock, Unlock } from 'lucide-react';
 
 interface Team {
   id: string;
   name: string;
+  is_locked?: boolean;
   created_at: string;
 }
 
@@ -96,6 +97,23 @@ export default function TeamsManager() {
     } catch (error: any) {
       console.error('Failed to update team', error);
       alert('Lỗi khi cập nhật team: ' + error.message);
+    }
+  };
+
+  const handleToggleLock = async (team: Team) => {
+    try {
+      const newStatus = !team.is_locked;
+      const { error } = await supabase
+        .from('teams')
+        .update({ is_locked: newStatus })
+        .eq('id', team.id);
+
+      if (error) throw error;
+
+      setTeams(teams.map(t => t.id === team.id ? { ...t, is_locked: newStatus } : t));
+    } catch (error: any) {
+      console.error('Failed to toggle lock', error);
+      alert('Lỗi khi cập nhật trạng thái khóa: ' + error.message);
     }
   };
 
@@ -203,10 +221,28 @@ export default function TeamsManager() {
                           <div className="flex items-center gap-2">
                             <Swords size={16} className="text-zinc-400" />
                             {team.name}
+                            {team.is_locked && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">
+                                <Lock size={12} />
+                                Đã chốt
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
+                            <button 
+                              onClick={() => handleToggleLock(team)}
+                              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors font-medium ${
+                                team.is_locked 
+                                  ? 'bg-amber-50 text-amber-600 hover:bg-amber-100' 
+                                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                              }`}
+                              title={team.is_locked ? "Mở khóa team" : "Chốt danh sách team"}
+                            >
+                              {team.is_locked ? <Unlock size={16} /> : <Lock size={16} />}
+                              <span>{team.is_locked ? "Mở khóa" : "Chốt"}</span>
+                            </button>
                             <button 
                               onClick={() => handleEditClick(team)}
                               className="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors font-medium"

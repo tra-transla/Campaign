@@ -15,11 +15,16 @@ interface Registration {
   created_at: string;
 }
 
+interface TeamOption {
+  name: string;
+  is_locked: boolean;
+}
+
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [registrations, setRegistrations] = useState<Registration[]>([]);
-  const [teams, setTeams] = useState<string[]>([]);
+  const [teams, setTeams] = useState<TeamOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'registrations' | 'teams' | 'users'>('registrations');
@@ -73,11 +78,11 @@ export default function AdminDashboard() {
     try {
       const { data, error } = await supabase
         .from('teams')
-        .select('name')
+        .select('name, is_locked')
         .order('created_at', { ascending: true });
         
       if (error) throw error;
-      if (data) setTeams(data.map(t => t.name));
+      if (data) setTeams(data.map(t => ({ name: t.name, is_locked: t.is_locked || false })));
     } catch (error) {
       console.error('Failed to fetch teams', error);
     }
@@ -316,9 +321,9 @@ export default function AdminDashboard() {
                                   className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
                                 >
                                   {teams.map(t => (
-                                    <option key={t} value={t}>{t}</option>
+                                    <option key={t.name} value={t.name}>{t.name} {t.is_locked ? '(Đã chốt)' : ''}</option>
                                   ))}
-                                  {!teams.includes(editForm.team) && (
+                                  {!teams.find(t => t.name === editForm.team) && (
                                     <option value={editForm.team}>{editForm.team}</option>
                                   )}
                                 </select>

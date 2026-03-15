@@ -16,8 +16,12 @@ ON CONFLICT (username) DO NOTHING;
 CREATE TABLE IF NOT EXISTS teams (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT UNIQUE NOT NULL,
+  is_locked BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+-- Thêm cột is_locked nếu bảng đã tồn tại
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS is_locked BOOLEAN DEFAULT FALSE;
 
 -- Thêm các team mặc định
 INSERT INTO teams (name) VALUES 

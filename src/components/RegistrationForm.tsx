@@ -11,6 +11,11 @@ interface Registration {
   created_at: string;
 }
 
+interface TeamOption {
+  name: string;
+  is_locked: boolean;
+}
+
 export default function RegistrationForm() {
   const [formData, setFormData] = useState({
     team: '',
@@ -20,7 +25,12 @@ export default function RegistrationForm() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [registrations, setRegistrations] = useState<Registration[]>([]);
-  const [teams, setTeams] = useState<string[]>(['Cá Kiếm', 'Minato', 'Team đấu giá', 'Team vá lốp']);
+  const [teams, setTeams] = useState<TeamOption[]>([
+    { name: 'Cá Kiếm', is_locked: false },
+    { name: 'Minato', is_locked: false },
+    { name: 'Team đấu giá', is_locked: false },
+    { name: 'Team vá lốp', is_locked: false }
+  ]);
   const [loadingRegistrations, setLoadingRegistrations] = useState(true);
 
   useEffect(() => {
@@ -52,12 +62,12 @@ export default function RegistrationForm() {
     try {
       const { data, error } = await supabase
         .from('teams')
-        .select('name')
+        .select('name, is_locked')
         .order('created_at', { ascending: true });
         
       if (error) throw error;
       if (data && data.length > 0) {
-        setTeams(data.map(t => t.name));
+        setTeams(data.map(t => ({ name: t.name, is_locked: t.is_locked || false })));
       }
     } catch (error) {
       console.error('Failed to fetch teams', error);
@@ -88,6 +98,13 @@ export default function RegistrationForm() {
     if (!formData.team.trim() || !formData.inGameName.trim() || !formData.tanks.trim()) {
       setStatus('error');
       setErrorMessage('Vui lòng điền đầy đủ thông tin.');
+      return;
+    }
+
+    const selectedTeam = teams.find(t => t.name === formData.team);
+    if (selectedTeam?.is_locked) {
+      setStatus('error');
+      setErrorMessage('Team này đã chốt danh sách, không thể đăng ký thêm.');
       return;
     }
 
@@ -181,7 +198,13 @@ export default function RegistrationForm() {
                   >
                     <option value="" disabled>-- Chọn team của bạn --</option>
                     {teams.map(team => (
-                      <option key={team} value={team}>{team}</option>
+                      <option 
+                        key={team.name} 
+                        value={team.name}
+                        disabled={team.is_locked}
+                      >
+                        {team.name} {team.is_locked ? '(Đã chốt)' : ''}
+                      </option>
                     ))}
                   </select>
                 </div>
