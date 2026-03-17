@@ -153,7 +153,7 @@ export default function RegistrationForm() {
           <p className="text-zinc-500 mb-8">Cảm ơn bạn đã đăng ký tham gia Campaign 2026.</p>
           <button 
             onClick={() => setStatus('idle')}
-            className="w-full bg-zinc-900 text-white py-3 rounded-xl font-medium hover:bg-zinc-800 transition-colors"
+            className="w-full bg-tank-camo bg-tank-camo-hover text-camo-light py-3 rounded-xl font-medium transition-colors"
           >
             Đăng ký thêm
           </button>
@@ -244,7 +244,7 @@ export default function RegistrationForm() {
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="w-full bg-zinc-900 text-white py-3 rounded-xl font-medium hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+                  className="w-full bg-tank-camo bg-tank-camo-hover text-camo-light py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
                 >
                   {status === 'submitting' ? 'Đang gửi...' : (
                     <>
@@ -298,12 +298,12 @@ export default function RegistrationForm() {
                     .sort(([teamA], [teamB]) => teamA.localeCompare(teamB))
                     .map(([teamName, members]: [string, Registration[]]) => (
                     <div key={teamName} className="bg-zinc-50 rounded-xl border border-zinc-200 overflow-hidden">
-                      <div className="bg-zinc-900 px-4 py-3 flex justify-between items-center">
+                      <div className="bg-tank-camo px-4 py-3 flex justify-between items-center">
                         <div className="flex items-center gap-2">
-                          <Swords size={18} className="text-zinc-400" />
-                          <h3 className="font-semibold text-white">{teamName}</h3>
+                          <Swords size={18} className="text-camo-accent" />
+                          <h3 className="font-semibold text-camo-light">{teamName}</h3>
                         </div>
-                        <span className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded-md font-medium">
+                        <span className="bg-camo-accent text-camo-light text-xs px-2 py-1 rounded-md font-medium">
                           {members.length} thành viên
                         </span>
                       </div>
