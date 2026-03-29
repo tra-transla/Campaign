@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Edit2, Trash2, Search, Users, Shield, Save, X, Settings, UserCog, User, Swords } from 'lucide-react';
+import { LogOut, Edit2, Trash2, Search, Users, Shield, Save, X, Settings, UserCog, User, Swords, Megaphone } from 'lucide-react';
 import { motion } from 'motion/react';
 import { supabase } from '../lib/supabase';
 import TeamsManager from './TeamsManager';
 import UsersManager from './UsersManager';
+import NewsManager from './NewsManager';
 
 interface Registration {
   id: string | number;
@@ -27,7 +28,7 @@ export default function AdminDashboard() {
   const [teams, setTeams] = useState<TeamOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState<'registrations' | 'teams' | 'users'>('registrations');
+  const [activeTab, setActiveTab] = useState<'registrations' | 'teams' | 'users' | 'news'>('registrations');
   
   const [editingId, setEditingId] = useState<string | number | null>(null);
   const [editForm, setEditForm] = useState({ team: '', inGameName: '', tanks: '' });
@@ -248,12 +249,24 @@ export default function AdminDashboard() {
                 <UserCog size={18} />
                 Quản lý Người dùng
               </button>
+              <button
+                onClick={() => setActiveTab('news')}
+                className={`pb-4 px-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+                  activeTab === 'news' 
+                    ? 'border-indigo-600 text-indigo-600' 
+                    : 'border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300'
+                }`}
+              >
+                <Megaphone size={18} />
+                Quản lý Tin tức
+              </button>
             </>
           )}
         </div>
 
         {activeTab === 'teams' && user?.role === 'Quản trị' && <TeamsManager />}
         {activeTab === 'users' && user?.role === 'Quản trị' && <UsersManager />}
+        {activeTab === 'news' && user?.role === 'Quản trị' && <NewsManager />}
 
         {activeTab === 'registrations' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
