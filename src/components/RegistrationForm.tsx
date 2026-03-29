@@ -361,15 +361,6 @@ export default function RegistrationForm() {
                   >
                     Danh sách
                   </button>
-                  <button
-                    onClick={() => setListTab('results')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
-                      listTab === 'results' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'
-                    }`}
-                  >
-                    <Trophy size={16} className={listTab === 'results' ? "text-yellow-500" : ""} />
-                    Kết quả
-                  </button>
                 </div>
               </div>
 
