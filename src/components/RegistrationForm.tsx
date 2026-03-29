@@ -368,7 +368,7 @@ export default function RegistrationForm() {
                 <div className="flex justify-center items-center h-64 text-zinc-500">
                   Đang tải dữ liệu...
                 </div>
-              ) : Object.keys(groupedRegistrations).length === 0 ? (
+              ) : filteredRegistrations.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-64 text-zinc-400">
                   {listTab === 'results' ? (
                     <>
@@ -381,6 +381,38 @@ export default function RegistrationForm() {
                       <p>Chưa có team nào đăng ký</p>
                     </>
                   )}
+                </div>
+              ) : listTab === 'results' ? (
+                <div className="bg-zinc-50 rounded-xl border border-zinc-200 overflow-hidden">
+                  <div className="bg-tank-camo px-4 py-3 flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <Trophy size={18} className="text-yellow-500 fill-yellow-500" />
+                      <h3 className="font-semibold text-camo-light">Danh sách lấy xe</h3>
+                    </div>
+                    <span className="bg-camo-accent text-camo-light text-xs px-2 py-1 rounded-md font-medium">
+                      {filteredRegistrations.length} thành viên
+                    </span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse bg-white">
+                      <thead>
+                        <tr className="bg-zinc-100 border-b border-zinc-200">
+                          <th className="px-4 py-3 font-semibold text-zinc-900 border-r border-zinc-200 w-16 text-center">STT</th>
+                          <th className="px-4 py-3 font-semibold text-zinc-900 border-r border-zinc-200">Nick ingame</th>
+                          <th className="px-4 py-3 font-semibold text-zinc-900">Team</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredRegistrations.map((member, index) => (
+                          <tr key={member.id} className="border-b border-zinc-200 hover:bg-zinc-50/50 transition-colors">
+                            <td className="px-4 py-3 text-zinc-600 border-r border-zinc-200 text-center">{index + 1}</td>
+                            <td className="px-4 py-3 font-medium text-zinc-900 border-r border-zinc-200">{member.in_game_name}</td>
+                            <td className="px-4 py-3 text-zinc-600">{member.team}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
