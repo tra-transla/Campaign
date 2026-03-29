@@ -292,65 +292,55 @@ export default function RegistrationForm() {
             </div>
           </div>
 
-          {/* Right Column - Registered Teams */}
-          <div className="lg:col-span-8">
+          {/* Right Column - Registered Teams & News */}
+          <div className="lg:col-span-8 space-y-8">
+            {news.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-zinc-100"
+              >
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-zinc-100">
+                  <div className="bg-indigo-50 p-2 rounded-lg text-indigo-600">
+                    <Megaphone size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-zinc-900">Tin tức mới nhất</h2>
+                    <p className="text-sm text-zinc-500">Thông báo từ ban tổ chức</p>
+                  </div>
+                </div>
+                <div className="h-[250px] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
+                  {news.map((item) => (
+                    <div key={item.id} className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+                      <h3 className="font-bold text-lg text-zinc-900 mb-2">{item.title}</h3>
+                      <p className="text-zinc-600 whitespace-pre-wrap text-sm mb-3">{item.content}</p>
+                      <div className="text-xs text-zinc-400">
+                        {new Date(item.created_at).toLocaleString('vi-VN')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.2 }}
               className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-zinc-100 min-h-[600px]"
             >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-4 border-b border-zinc-100">
-                <div className="flex items-center gap-3">
-                  <div className="bg-zinc-100 p-2 rounded-lg text-zinc-600">
-                    <Users size={24} />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-zinc-900">Danh sách đăng ký</h2>
-                    <p className="text-sm text-zinc-500">Thông tin các team đã đăng ký tham gia</p>
-                  </div>
+              <div className="flex items-center gap-3 mb-8 pb-4 border-b border-zinc-100">
+                <div className="bg-zinc-100 p-2 rounded-lg text-zinc-600">
+                  <Users size={24} />
                 </div>
-                <div className="flex bg-zinc-100 p-1 rounded-lg">
-                  <button
-                    onClick={() => setActiveTab('registrations')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'registrations' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'
-                    }`}
-                  >
-                    Danh sách
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('news')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
-                      activeTab === 'news' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'
-                    }`}
-                  >
-                    <Megaphone size={16} />
-                    Tin tức
-                  </button>
+                <div>
+                  <h2 className="text-xl font-bold text-zinc-900">Danh sách đăng ký</h2>
+                  <p className="text-sm text-zinc-500">Thông tin các team đã đăng ký tham gia</p>
                 </div>
               </div>
 
-              {activeTab === 'news' ? (
-                <div className="h-[250px] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
-                  {news.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-zinc-400">
-                      <Megaphone size={48} className="mb-4 opacity-20" />
-                      <p>Chưa có tin tức nào</p>
-                    </div>
-                  ) : (
-                    news.map((item) => (
-                      <div key={item.id} className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
-                        <h3 className="font-bold text-lg text-zinc-900 mb-2">{item.title}</h3>
-                        <p className="text-zinc-600 whitespace-pre-wrap text-sm mb-3">{item.content}</p>
-                        <div className="text-xs text-zinc-400">
-                          {new Date(item.created_at).toLocaleString('vi-VN')}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              ) : loadingRegistrations ? (
+              {loadingRegistrations ? (
                 <div className="flex justify-center items-center h-64 text-zinc-500">
                   Đang tải dữ liệu...
                 </div>
