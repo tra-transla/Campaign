@@ -33,6 +33,12 @@ export default function AdminLogin() {
         return;
       }
 
+      if (user.is_locked) {
+        setError('Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Quản trị viên.');
+        setLoading(false);
+        return;
+      }
+
       login({
         id: user.id,
         username: user.username,

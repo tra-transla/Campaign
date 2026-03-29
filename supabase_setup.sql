@@ -3,8 +3,12 @@ CREATE TABLE IF NOT EXISTS users (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
-  role TEXT NOT NULL
+  role TEXT NOT NULL,
+  is_locked BOOLEAN DEFAULT FALSE
 );
+
+-- Thêm cột is_locked nếu bảng đã tồn tại
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_locked BOOLEAN DEFAULT FALSE;
 
 -- Thêm tài khoản mặc định (bỏ qua nếu đã tồn tại username)
 INSERT INTO users (username, password, role) VALUES 
