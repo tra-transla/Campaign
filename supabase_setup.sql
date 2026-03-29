@@ -37,8 +37,12 @@ CREATE TABLE IF NOT EXISTS registrations (
   team TEXT NOT NULL,
   in_game_name TEXT NOT NULL,
   tanks TEXT NOT NULL,
+  is_winner BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+-- Thêm cột is_winner nếu bảng đã tồn tại
+ALTER TABLE registrations ADD COLUMN IF NOT EXISTS is_winner BOOLEAN DEFAULT FALSE;
 
 -- Tạo bảng news
 CREATE TABLE IF NOT EXISTS news (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Edit2, Trash2, Search, Users, Shield, Save, X, Settings, UserCog, User, Swords, Megaphone } from 'lucide-react';
+import { LogOut, Edit2, Trash2, Search, Users, Shield, Save, X, Settings, UserCog, User, Swords, Megaphone, Trophy } from 'lucide-react';
 import { motion } from 'motion/react';
 import { supabase } from '../lib/supabase';
 import TeamsManager from './TeamsManager';
@@ -13,6 +13,7 @@ interface Registration {
   team: string;
   in_game_name: string;
   tanks: string;
+  is_winner?: boolean;
   created_at: string;
 }
 
@@ -62,7 +63,7 @@ export default function AdminDashboard() {
     try {
       const { data, error } = await supabase
         .from('registrations')
-        .select('*')
+        .select('id, team, in_game_name, tanks, created_at, is_winner')
         .order('team', { ascending: true })
         .order('created_at', { ascending: false });
         
@@ -132,6 +133,24 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Failed to update', error);
       alert('Lỗi khi cập nhật');
+    }
+  };
+
+  const toggleWinner = async (id: string | number, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('registrations')
+        .update({ is_winner: !currentStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setRegistrations(registrations.map(reg => 
+        reg.id === id ? { ...reg, is_winner: !currentStatus } : reg
+      ));
+    } catch (error) {
+      console.error('Failed to update winner status', error);
+      alert('Lỗi khi cập nhật trạng thái kết quả');
     }
   };
 
@@ -396,6 +415,18 @@ export default function AdminDashboard() {
                               </td>
                               <td className="px-6 py-4 text-right">
                                 <div className="flex items-center justify-end gap-2">
+                                  <button 
+                                    onClick={() => toggleWinner(reg.id, !!reg.is_winner)}
+                                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors font-medium ${
+                                      reg.is_winner 
+                                        ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' 
+                                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                                    }`}
+                                    title={reg.is_winner ? "Bỏ chọn kết quả" : "Chọn vào kết quả"}
+                                  >
+                                    <Trophy size={16} className={reg.is_winner ? "fill-yellow-500 text-yellow-500" : ""} />
+                                    <span>Kết quả</span>
+                                  </button>
                                   <button 
                                     onClick={() => handleEditClick(reg)}
                                     className="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors font-medium"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Send, CheckCircle2, Users, Swords, ChevronDown, ChevronRight, Megaphone } from 'lucide-react';
+import { Send, CheckCircle2, Users, Swords, ChevronDown, ChevronRight, Megaphone, Trophy } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Registration {
@@ -8,6 +8,7 @@ interface Registration {
   team: string;
   in_game_name: string;
   tanks: string;
+  is_winner?: boolean;
   created_at: string;
 }
 
@@ -33,6 +34,7 @@ export default function RegistrationForm() {
   ]);
   const [loadingRegistrations, setLoadingRegistrations] = useState(true);
   const [activeTab, setActiveTab] = useState<'registrations' | 'news'>('registrations');
+  const [listTab, setListTab] = useState<'all' | 'results'>('all');
   const [news, setNews] = useState<any[]>([]);
   const [expandedTeams, setExpandedTeams] = useState<Record<string, boolean>>({});
 
@@ -105,7 +107,7 @@ export default function RegistrationForm() {
     try {
       const { data, error } = await supabase
         .from('registrations')
-        .select('*')
+        .select('id, team, in_game_name, tanks, created_at, is_winner')
         .order('created_at', { ascending: true });
         
       if (error) throw error;
@@ -156,7 +158,8 @@ export default function RegistrationForm() {
   };
 
   // Group registrations by team
-  const groupedRegistrations = registrations.reduce((acc, reg) => {
+  const filteredRegistrations = registrations.filter(reg => listTab === 'all' || reg.is_winner);
+  const groupedRegistrations = filteredRegistrations.reduce((acc, reg) => {
     const teamName = reg.team || 'Khác';
     if (!acc[teamName]) {
       acc[teamName] = [];
@@ -330,13 +333,43 @@ export default function RegistrationForm() {
               transition={{ delay: 0.2 }}
               className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-zinc-100 min-h-[600px]"
             >
-              <div className="flex items-center gap-3 mb-8 pb-4 border-b border-zinc-100">
-                <div className="bg-zinc-100 p-2 rounded-lg text-zinc-600">
-                  <Users size={24} />
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-4 border-b border-zinc-100">
+                <div className="flex items-center gap-3">
+                  <div className="bg-zinc-100 p-2 rounded-lg text-zinc-600">
+                    <Users size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-zinc-900">Danh sách đăng ký</h2>
+                    <p className="text-sm text-zinc-500">Thông tin các team đã đăng ký tham gia</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-zinc-900">Danh sách đăng ký</h2>
-                  <p className="text-sm text-zinc-500">Thông tin các team đã đăng ký tham gia</p>
+                <div className="flex bg-zinc-100 p-1 rounded-lg">
+                  <button
+                    onClick={() => setListTab('results')}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+                      listTab === 'results' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'
+                    }`}
+                  >
+                    <Trophy size={16} className={listTab === 'results' ? "text-yellow-500" : ""} />
+                    Kết quả
+                  </button>
+                  <button
+                    onClick={() => setListTab('all')}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      listTab === 'all' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'
+                    }`}
+                  >
+                    Danh sách
+                  </button>
+                  <button
+                    onClick={() => setListTab('results')}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+                      listTab === 'results' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'
+                    }`}
+                  >
+                    <Trophy size={16} className={listTab === 'results' ? "text-yellow-500" : ""} />
+                    Kết quả
+                  </button>
                 </div>
               </div>
 
@@ -346,8 +379,17 @@ export default function RegistrationForm() {
                 </div>
               ) : Object.keys(groupedRegistrations).length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-64 text-zinc-400">
-                  <Users size={48} className="mb-4 opacity-20" />
-                  <p>Chưa có team nào đăng ký</p>
+                  {listTab === 'results' ? (
+                    <>
+                      <Trophy size={48} className="mb-4 opacity-20" />
+                      <p>Chưa có kết quả nào được công bố</p>
+                    </>
+                  ) : (
+                    <>
+                      <Users size={48} className="mb-4 opacity-20" />
+                      <p>Chưa có team nào đăng ký</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -379,7 +421,12 @@ export default function RegistrationForm() {
                             <ul className="space-y-4">
                               {members.map((member, index) => (
                                 <li key={member.id} className={index !== members.length - 1 ? "border-b border-zinc-200 pb-4" : ""}>
-                                  <div className="font-medium text-zinc-900 mb-1">{member.in_game_name}</div>
+                                  <div className="font-medium text-zinc-900 mb-1 flex items-center gap-2">
+                                    {member.in_game_name}
+                                    {member.is_winner && listTab === 'all' && (
+                                      <Trophy size={14} className="text-yellow-500 fill-yellow-500" title="Đã chọn vào kết quả" />
+                                    )}
+                                  </div>
                                   <div className="text-sm text-zinc-500">
                                     <span className="font-medium text-zinc-700">Tanks:</span> {member.tanks}
                                   </div>
